@@ -8,7 +8,7 @@ this package brings together all these functions and provides a unified interfac
 
 ## Content of the package
 
-The package provide the following function :
+The package provides the following functions :
 * Mean Error
 * Mean Absolute Error
 * Root Mean Square Error
