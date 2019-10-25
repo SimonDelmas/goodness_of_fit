@@ -576,6 +576,25 @@ def sdr(cal, obs, transform=None, eps=1e-6):
     return np.sqrt(np.nanmean(np.power((cal - obs) - cal.mean() + obs.mean(), 2.0)))
 
 
+def log_p(cal, obs, transform=None, eps=1e-6):
+    """
+    Logarithmic probability distribution
+    Implementation largely inspired by : https://github.com/thouska/spotpy
+
+    :param cal: (N,) array_like of calculated values
+    :param obs: (N,) array_like of observed values
+    :param transform: Transformation function to apply to input array
+    :param eps: Epsilon value useful for certain transformation that cannot be applied on zero values
+    :return: Standard deviation of residual between 'cal' and 'obs'
+    """
+    cal, obs = __preprocessing(cal, obs, transform=transform, eps=eps)
+
+    scale = np.nanmean(obs) / 10.0
+    y = (obs - cal) / max(scale, 0.01)
+    norm_pdf = -y**2 * 0.5 - np.log(np.sqrt(2.0 * np.pi))
+    return np.nanmean(norm_pdf)
+
+
 gof_measure = {
     "me": me,
     "mae": mae,
@@ -593,4 +612,5 @@ gof_measure = {
     "KGE": kge,
     "DG": dg,
     "sdr": sdr,
+    "log_p": log_p
 }

@@ -138,3 +138,11 @@ def test_sdr(observed_data, calculated_data):
     res = sdr(calculated_data, observed_data)
     assert res == pytest.approx(0.14762109191364817)
 
+
+def test_log_p():
+    np.random.seed(42)
+    cal = np.random.randn(10)
+    obs = np.random.randn(10)
+
+    res = log_p(cal + 3.0, obs + 3.0)
+    assert res == pytest.approx(-27.8282293618210)
