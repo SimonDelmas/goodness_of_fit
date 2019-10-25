@@ -220,13 +220,15 @@ def r_pearson(cal, obs, transform=None, eps=1e-6):
     """
     cal, obs = __preprocessing(cal, obs, transform=transform, eps=eps)
 
-    xm, ym = cal - np.nanmean(cal), obs - np.nanmean(obs)
-    r_num = np.add.reduce(xm * ym)
-    r_den = np.sqrt(np.nansum(xm * xm) * np.nansum(ym * ym))
-    if r_den == 0.0:
-        warnings.warn("Both signal are flat and null. Return Nan.")
-        return np.nan
-    return r_num / r_den
+    return np.corrcoef(obs, cal)[0, 1]
+
+    # xm, ym = cal - np.nanmean(cal), obs - np.nanmean(obs)
+    # r_num = np.add.reduce(xm * ym)
+    # r_den = np.sqrt(np.nansum(xm * xm) * np.nansum(ym * ym))
+    # if r_den == 0.0:
+    #     warnings.warn("Both signal are flat and null. Return Nan.")
+    #     return np.nan
+    # return r_num / r_den
 
 
 # def r_spearman(cal, obs):
