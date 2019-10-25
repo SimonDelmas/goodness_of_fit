@@ -99,6 +99,33 @@ def test_nse(observed_data, calculated_data):
     assert res == pytest.approx(0.14937605942144527)
 
 
+def test_nse_with_transformation(observed_data, calculated_data):
+    res = nse(calculated_data, calculated_data, transform='log')
+    assert res == 1.0
+    res = nse(calculated_data, observed_data, transform='log')
+    assert res == pytest.approx(0.1299894515575456)
+
+    res = nse(calculated_data, calculated_data, transform='sqrt')
+    assert res == 1.0
+    res = nse(calculated_data, observed_data, transform='sqrt')
+    assert res == pytest.approx(0.1396087617163264)
+
+    res = nse(calculated_data, calculated_data, transform='inv')
+    assert res == 1.0
+    res = nse(calculated_data, observed_data, transform='inv')
+    assert res == pytest.approx(0.11124914129469554)
+
+    res = nse(calculated_data, calculated_data, transform='boxcox')
+    assert res == 1.0
+    res = nse(calculated_data, observed_data, transform='boxcox')
+    assert res == pytest.approx(0.1572331968613957)
+
+    res = nse(calculated_data, calculated_data, transform=2)
+    assert res == 1.0
+    res = nse(calculated_data, observed_data, transform=2)
+    assert res == pytest.approx(0.16929067791692887)
+
+
 def test_mnse(observed_data, calculated_data):
     res = mnse(calculated_data, calculated_data)
     assert res == 1.0
