@@ -65,7 +65,7 @@ def is_flat(signal, eps=1e-2):
     :return: Bool.
     """
     s = np.asarray(signal)
-    return np.std(s) < eps * np.mean(s)
+    return np.std(s) < eps * np.nanmean(s)
 
 
 def me(cal, obs):
@@ -82,7 +82,7 @@ def me(cal, obs):
 
     """
     cal, obs = _check_inputs(cal, obs)
-    result = np.mean(cal) - np.mean(obs)
+    result = np.nanmean(cal) - np.nanmean(obs)
     return result
 
 
@@ -100,7 +100,7 @@ def mae(cal, obs):
 
     """
     cal, obs = _check_inputs(cal, obs)
-    result = np.mean(np.abs(cal - obs))
+    result = np.nanmean(np.abs(cal - obs))
     return result
 
 
@@ -118,7 +118,7 @@ def rmse(cal, obs):
 
     """
     cal, obs = _check_inputs(cal, obs)
-    result = np.sqrt(np.mean(np.power(cal - obs, 2.0)))
+    result = np.sqrt(np.nanmean(np.power(cal - obs, 2.0)))
     return result
 
 
@@ -186,9 +186,9 @@ def r_pearson(cal, obs):
     """
     cal, obs = _check_inputs(cal, obs)
 
-    xm, ym = cal - cal.mean(), obs - obs.mean()
+    xm, ym = cal - np.nanmean(cal), obs - np.nanmean(obs)
     r_num = np.add.reduce(xm * ym)
-    r_den = np.sqrt(np.sum(xm * xm) * np.sum(ym * ym))
+    r_den = np.sqrt(np.nansum(xm * xm) * np.nansum(ym * ym))
     if r_den == 0.0:
         warnings.warn("Both signal are flat and null. Return Nan.")
         return np.nan
@@ -267,15 +267,15 @@ def md(cal, obs, order=1):
     """
     cal, obs = _check_inputs(cal, obs)
 
-    obs_mean = obs.mean()
-    denominator = np.sum(
+    obs_mean = np.nanmean(obs)
+    denominator = np.nansum(
         np.power(np.abs(cal - obs_mean) + np.abs(obs - obs_mean), order)
     )
     if denominator == 0.0:
         warnings.warn("Index of agreement potential error is null! Return NaN.")
         return np.nan
 
-    nominator = np.sum(np.abs(np.power(obs - cal, order)))
+    nominator = np.nansum(np.abs(np.power(obs - cal, order)))
     return 1 - (nominator / denominator)
 
 
@@ -304,14 +304,14 @@ def rd(cal, obs):
         )
         return np.nan
 
-    obs_mean = obs.mean()
+    obs_mean = np.nanmean(obs)
     if obs_mean == 0.0:
         warnings.warn(
             "Cannot compute relative index of agreement as mean of observation is null!"
         )
         return np.nan
 
-    denominator = np.sum(
+    denominator = np.nansum(
         np.power((np.abs(cal - obs_mean) + np.abs(obs - obs_mean)) / obs_mean, 2.0)
     )
     if denominator == 0.0:
@@ -320,7 +320,7 @@ def rd(cal, obs):
         )
         return np.nan
 
-    nominator = np.sum(np.power((obs - cal) / obs, 2.0))
+    nominator = np.nansum(np.power((obs - cal) / obs, 2.0))
     return 1 - (nominator / denominator)
 
 
@@ -366,12 +366,12 @@ def nse(cal, obs):
 
     """
     cal, obs = _check_inputs(cal, obs)
-    obs_mean = obs.mean()
-    denominator = np.sum(np.power(obs - obs_mean, 2.0))
+    obs_mean = np.nanmean(obs)
+    denominator = np.nansum(np.power(obs - obs_mean, 2.0))
     if denominator == 0.0:
         warnings.warn("Observation variance is null. Return NaN.")
         return np.nan
-    return 1.0 - np.sum(np.power(obs - cal, 2.0)) / denominator
+    return 1.0 - np.nansum(np.power(obs - cal, 2.0)) / denominator
 
 
 def mnse(cal, obs, order=1):
@@ -393,12 +393,12 @@ def mnse(cal, obs, order=1):
 
     """
     cal, obs = _check_inputs(cal, obs)
-    obs_mean = obs.mean()
-    denominator = np.sum(np.abs(np.power(obs - obs_mean, order)))
+    obs_mean = np.nanmean(obs)
+    denominator = np.nansum(np.abs(np.power(obs - obs_mean, order)))
     if denominator == 0.0:
         warnings.warn("Observation variance is null. Return NaN.")
         return np.nan
-    return 1.0 - np.sum(np.abs(np.power(obs - cal, order))) / denominator
+    return 1.0 - np.nansum(np.abs(np.power(obs - cal, order))) / denominator
 
 
 def rnse(cal, obs):
@@ -425,19 +425,19 @@ def rnse(cal, obs):
         )
         return np.nan
 
-    obs_mean = obs.mean()
+    obs_mean = np.nanmean(obs)
     if obs_mean == 0.0:
         warnings.warn(
             "Cannot compute relative efficiency as mean of observation is null!"
         )
         return np.nan
 
-    denominator = np.sum(np.power((obs - obs_mean) / obs_mean, 2.0))
+    denominator = np.nansum(np.power((obs - obs_mean) / obs_mean, 2.0))
     if denominator == 0.0:
         warnings.warn("Normalized variance of observation is null! Return NaN.")
         return np.nan
 
-    return 1.0 - np.sum(np.power((obs - cal) / obs, 2.0)) / denominator
+    return 1.0 - np.nansum(np.power((obs - cal) / obs, 2.0)) / denominator
 
 
 def kge(cal, obs):
@@ -466,12 +466,12 @@ def kge(cal, obs):
     if o_std == 0.0:
         return np.nan
 
-    o_mean = np.mean(obs)
+    o_mean = np.nanmean(obs)
     if o_mean == 0.0:
         return np.nan
 
     std_ratio = np.std(cal) / o_std
-    mean_ratio = np.mean(cal) / o_mean
+    mean_ratio = np.nanmean(cal) / o_mean
     pears = r_pearson(cal, obs)
     return 1.0 - np.sqrt(
         (pears - 1.0) ** 2.0 + (std_ratio - 1.0) ** 2.0 + (mean_ratio - 1.0) ** 2.0
@@ -496,11 +496,11 @@ def dg(cal, obs):
     """
     cal, obs = _check_inputs(cal, obs)
 
-    den = np.sum((obs - obs.mean()) ** 2.0)
+    den = np.nansum((obs - obs.mean()) ** 2.0)
     if den == 0.0:
         return np.nan
 
-    return 1.0 - np.sum((obs - cal) ** 2.0) / den
+    return 1.0 - np.nansum((obs - cal) ** 2.0) / den
 
 
 def sdr(cal, obs):
@@ -517,7 +517,7 @@ def sdr(cal, obs):
     """
     cal, obs = _check_inputs(cal, obs)
 
-    return np.sqrt(np.mean(np.power((cal - obs) - cal.mean() + obs.mean(), 2.0)))
+    return np.sqrt(np.nanmean(np.power((cal - obs) - cal.mean() + obs.mean(), 2.0)))
 
 
 gof_measure = {
